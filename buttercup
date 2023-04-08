@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+import subprocess
+
+def pull(image_path):
+    subprocess.run(["docker", "pull", image_path], check=True)
+
+
+def start(image_path):
+    subprocess.run(["xhost", "+"], check=True)
+    subprocess.run([
+        "docker", "run",
+        "--interactive", "--tty",
+        "--env", f'DISPLAY={os.environ["DISPLAY"]}',
+        "--volume", "/tmp/.X11-unix:/tmp/.X11-unix",
+        "--shm-size", "4gb",
+        "--volume", f"{os.getcwd()}/buttercup_vault:/buttercup_vault",
+        image_path
+    ], check=True)
+
+
+def parse_args():
+    """
+    Parses of command line arguments
+    """
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        '-u', '--start', action='store_true',
+        help='starts easyeda(window will open instantly)'
+    )
+
+    parser.add_argument(
+        '-p', '--pull', action='store_true',
+        help='pull laters image from github'
+    )
+
+    args = vars(parser.parse_args())
+
+    if not any(args.values()):
+        parser.print_help()
+        sys.exit(1)
+
+    return args
+
+
+def main():
+    """
+    Checks arguments and runs mentioned commands
+    """
+
+    args = parse_args()
+
+    image_path = "ghcr.io/dkushche/buttercup:master"
+
+    for cmd, status in args.items():
+        if status is True:
+            globals()[cmd](image_path)
+
+
+if __name__ == "__main__":
+    main()
