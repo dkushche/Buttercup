@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y libatk-bridge2.0-0 \
                                          libgbm-dev \
                                          libasound2 \
                                          libgtk-3-0 \
+                                         xdg-utils \
                                          libnss3 \
                                          libdrm2 \
                                          wget
@@ -21,6 +22,8 @@ COPY --from=download /Buttercup-linux-x86_64.AppImage /home/
 
 WORKDIR /home
 
+COPY entrypoint.sh .
+
 RUN ./Buttercup-linux-x86_64.AppImage --appimage-extract
 
-CMD ["./squashfs-root/buttercup", "--no-sandbox"]
+ENTRYPOINT [ "./entrypoint.sh" ]

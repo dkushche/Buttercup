@@ -18,7 +18,7 @@ def start(image_path):
         "--volume", "/tmp/.X11-unix:/tmp/.X11-unix",
         "--shm-size", "4gb",
         "--volume", f"{os.getcwd()}/buttercup_vault:/buttercup_vault",
-        image_path
+        image_path,
     ], check=True)
 
 
